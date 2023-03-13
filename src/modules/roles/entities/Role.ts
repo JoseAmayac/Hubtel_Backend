@@ -13,7 +13,9 @@ export class Role implements EntityBase<number> {
     })
     name!: string;
 
-    @ManyToMany(type => Permission)
+    @ManyToMany(type => Permission, permission => permission.roles, {
+        eager: true
+    })
     @JoinTable({
         name: 'roles_permissions'
     })

@@ -14,7 +14,7 @@ export class RouteController{
             return res.json({ ok: true, routes });
         } catch (error) {
             res.status( 500 );
-            next( error );
+            return next( error );
         }
     }
 
@@ -25,7 +25,7 @@ export class RouteController{
 
             if( !route ){
                 res.status( 404 );
-                next( new Error('Route not found') );
+                return next( new Error('Route not found') );
             }
 
             return res.json({ ok: true, route });
@@ -36,8 +36,8 @@ export class RouteController{
     }
 
     public create = async (req: Request, res: Response, next: NextFunction): Promise<Response|void> => {
-        try {
-            const routeExists = await this.routeService.getByName( req.body.name );
+        try {            
+            const routeExists = await this.routeService.getByName( req.body.pathname );
             if( routeExists ) {
                 return res.status(422).json({errors: [{ name: 'Route already exists' }]});
             }
@@ -52,8 +52,8 @@ export class RouteController{
 
     public update =  async (req: Request, res: Response, next: NextFunction): Promise<Response|void> => {
         try {
-            const { id } = req.body;
-            const route = await this.routeService.update( id, req.body );
+            const { id } = req.params;
+            await this.routeService.update( +id, req.body );
             return res.status(204).json();
         } catch (error) {
             res.status( 500 );

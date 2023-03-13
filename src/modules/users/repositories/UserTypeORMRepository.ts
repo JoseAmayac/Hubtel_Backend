@@ -12,4 +12,12 @@ export class UserTypeORMRepository extends TypeORMRepository<User> implements IU
         super(dataSource, User);
     }
 
+    // getEntity( id: number ): Promise<User|null>{
+    //     return this._repository.findOneBy(id, {
+    //         relations: {
+    //             roles: true
+    //         }
+    //     })
+    // }
+
 }

@@ -2,7 +2,7 @@ import { IAuthRepository } from '../interfaces/IAuthRepository';
 import { User } from '../../users/entities/User';
 import { Repository, DataSource } from 'typeorm';
 import { inject, injectable } from 'inversify';
-import { AuthUserDTO } from '../dtos/AuthUserDTO';
+import { AuthUserWithRolesDTO } from '../dtos/AuthUserDTO';
 import { TYPES } from '../../../config/ioc/types';
 
 @injectable()
@@ -17,11 +17,12 @@ export class AuthRepository implements IAuthRepository {
         return this.authRepository.findOneBy({ email })
     }
     
-    async createAuthUser(authUser: AuthUserDTO): Promise<User> {
+    async createAuthUser(authUser: AuthUserWithRolesDTO): Promise<User> {
         const user = new User();
         user.name = authUser.name;
         user.email = authUser.email;
-        user.password = authUser.password
+        user.password = authUser.password;
+        user.roles = authUser.roles;
 
         return await this.authRepository.save( user );
     }

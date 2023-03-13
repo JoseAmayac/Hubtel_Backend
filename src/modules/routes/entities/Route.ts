@@ -16,11 +16,19 @@ export class Route implements EntityBase<number>{
     module!: string
 
     @Column({
+        nullable: true,
         default: true
     })
     isActive!: boolean;
 
-    @ManyToMany(type => Permission)
+    @Column({
+        nullable: true
+    })
+    description?: string;
+
+    @ManyToMany(type => Permission, permission => permission.routes, {
+        eager: true
+    })
     @JoinTable({
         name: 'routes_permissions',
     })

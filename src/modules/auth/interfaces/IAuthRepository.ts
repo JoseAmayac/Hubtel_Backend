@@ -1,7 +1,7 @@
 import { User } from '../../users/entities/User';
-import { AuthUserDTO } from '../dtos/AuthUserDTO';
+import { AuthUserWithRolesDTO } from '../dtos/AuthUserDTO';
 
 export interface IAuthRepository{
     getByEmail( email: string ): Promise<User|null>;
-    createAuthUser( user: AuthUserDTO ): Promise<User>;
+    createAuthUser( user: AuthUserWithRolesDTO ): Promise<User>;
 }

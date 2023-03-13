@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Container, inject } from "inversify";
 import { TYPES } from '../../../config/ioc/types';
 import { isAuthenticated } from "../../../middleware/isAuthenticated";
+import { validateRoutePermissions } from "../../../middleware/validateRoutePermission";
 import { UserController } from "../controllers/UserController";
 import { createOrUpdateValidation } from "../validations/createOrUpdateValidation";
 
@@ -15,8 +16,9 @@ export class UserRoutes {
 
     private setRoutes(): void {
         this._router.use( isAuthenticated );
+        this._router.use( validateRoutePermissions );
         this._router.get('/', this.userController.getUsers );
-        // this._router.post('/', [ createOrUpdateValidation ] , this.userController.createUser);
+        this._router.post('/', [ createOrUpdateValidation ] , this.userController.createUser);
         this._router.get('/:id', this.userController.getUser);
         this._router.put('/:id', [ createOrUpdateValidation ] , this.userController.updateUser);
         this._router.delete('/:id', this.userController.deleteUser);

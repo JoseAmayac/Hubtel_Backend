@@ -10,4 +10,19 @@ export class RoleTypeORMRepository extends TypeORMNameRepository<Role> implement
     constructor(@inject(TYPES.TypeORMDataSource) dataSource: DataSource ){
         super( dataSource, Role );
     }
+
+    async getEntitiesById(rolesId: number[]): Promise<Role[]> {
+        const roles = await this._repository.find({ 
+            where: rolesId.map( id => ({id}) )
+        });
+
+        if( roles.length < rolesId.length ) {
+            throw {
+                name: 'INVALID_ROLES',
+                message: 'One or more roles does not exist'
+            }
+        }
+
+        return roles;
+    }
 }

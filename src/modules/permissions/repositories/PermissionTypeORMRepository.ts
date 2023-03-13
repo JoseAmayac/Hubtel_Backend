@@ -19,7 +19,7 @@ export class PermissionTypeORMRepository extends TypeORMNameRepository<Permissio
         if( permissions.length < permissionsId.length ){
             throw {
                 name: 'INVALID_PERMISSIONS',
-                message: 'One or more permissions does not exists'
+                message: 'One or more permissions does not exist'
             }
         }
 

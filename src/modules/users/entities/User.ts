@@ -16,11 +16,19 @@ export class User implements EntityBase<number> {
     @Column()
     password!: string;
 
-    @ManyToMany(type => Role)
+    @ManyToMany(type => Role, role => role.users, {
+        eager: true
+    })
     @JoinTable({
-        name: 'users_roles'
+        name: 'users_roles',
     })
     roles!: Role[];
+
+    @Column({
+        nullable: true,
+        default: false
+    })
+    isVerified!: boolean;
 
     @CreateDateColumn()
     createdAt!: Date;

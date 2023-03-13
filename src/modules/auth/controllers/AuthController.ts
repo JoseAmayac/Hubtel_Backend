@@ -8,7 +8,6 @@ import { TYPES } from '../../../config/ioc/types';
 
 @injectable()
 export class AuthController {
-
     constructor(@inject(TYPES.IAuthService) private authService: AuthService){}
 
     public login = async ( req: Request, res: Response, next: NextFunction ): Promise<Response | void > => {
@@ -42,7 +41,11 @@ export class AuthController {
             const user = await this.authService.registerUser( userDTO );
             const response = this.authService.createResponse( user );
             return res.status(201).json(response);
-        } catch (error) {
+        } catch (error: any) {
+            if( error.name === 'INVALID_ROLES' ){
+                return res.status(422).json({errors: [{ roles: error.message }]});
+            }
+            
             res.status(500);
             next( error );
         }
@@ -56,5 +59,15 @@ export class AuthController {
             res.status(500);
             next( error );
         }
+    }
+
+    refresh = (req: Request, res: Response, next: NextFunction): Response => {
+        if( !req.user ){
+            return res.status(401).send("ERROR");
+        }
+        const { email, name, id } = req.user as User;
+        const response = this.authService.createResponse({ email, name, id });
+
+        return res.json( response );
     }
 }

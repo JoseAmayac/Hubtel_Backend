@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { User } from '../../users/entities/User';
-import { AuthUserDTO } from '../dtos/AuthUserDTO';
+import { AuthUserDTO, AuthUserWithRolesDTO } from '../dtos/AuthUserDTO';
 import { hashValue } from '../../../utils/hashValue';
 import { AuthCreatedUserDTO } from '../dtos/AuthCreatedUserDTO';
 import { AuthResponseDTO } from '../dtos/AuthResponseDTO';
@@ -8,15 +8,26 @@ import { generateToken } from '../helpers/generateToken';
 import { TYPES } from '../../../config/ioc/types';
 import { IAuthService } from '../interfaces/IAuthService';
 import { IAuthRepository } from '../interfaces/IAuthRepository';
+import { IRoleRepository } from '../../roles/interfaces/IRoleRepository';
 
 @injectable()
 export class AuthService implements IAuthService {
-    constructor(@inject(TYPES.IAuthRepository) private authRepository: IAuthRepository){}
+    constructor(@inject(TYPES.IAuthRepository) private authRepository: IAuthRepository,
+                @inject(TYPES.IRolesRepository) private roleRepository: IRoleRepository){}
 
 
     async registerUser(user: AuthUserDTO): Promise<AuthCreatedUserDTO> {
-        user.password = hashValue( user.password );
-        const { email, name, id } = await this.authRepository.createAuthUser(  user );
+        const role = await this.roleRepository.getEntityByName('USUARIO');
+        if( !role ){
+            throw new Error('ROLE_NOT_EXISTS');
+        }
+        
+        const userWithRoles: AuthUserWithRolesDTO = {
+            ...user,
+            roles: [ role ],
+            password: hashValue( user.password )
+        }
+        const { email, name, id } = await this.authRepository.createAuthUser(  userWithRoles );
         const userCreated: AuthCreatedUserDTO  = {
             name,
             email,
@@ -31,10 +42,10 @@ export class AuthService implements IAuthService {
     }
 
     createResponse( user: AuthCreatedUserDTO): AuthResponseDTO{
-        const token = generateToken({ id: user.id });
+        const [ token, refreshToken ] = generateToken({ id: user.id });
         
         return {
-            user, token
+            user, token, refreshToken
         }
     }
 

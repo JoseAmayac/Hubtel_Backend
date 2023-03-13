@@ -3,6 +3,7 @@ import { Container, inject } from "inversify";
 import { TYPES } from '../../../config/ioc/types';
 import { isAuthenticated } from "../../../middleware/isAuthenticated";
 import { RouteController } from "../controllers/RouteController";
+import { createOrUpdateRouteValidations } from "../validations/createOrUpdateRouteValidations";
 
 export class RouteRoutes {
   private readonly _router: Router;
@@ -18,8 +19,8 @@ export class RouteRoutes {
     this._router.use(isAuthenticated);
     this._router.get("/", this.routeController.getRoutes);
     this._router.get("/:id", this.routeController.getById);
-    this._router.post("/", this.routeController.create);
-    this._router.put("/:id", this.routeController.update);
+    this._router.post("/",[createOrUpdateRouteValidations], this.routeController.create);
+    this._router.put("/:id", [createOrUpdateRouteValidations],this.routeController.update);
     this._router.delete("/:id", this.routeController.delete);
   }
 

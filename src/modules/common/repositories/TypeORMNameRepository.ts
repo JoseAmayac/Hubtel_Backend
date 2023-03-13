@@ -1,5 +1,5 @@
 import { injectable, unmanaged } from 'inversify';
-import { DataSource, EntityTarget, FindManyOptions } from 'typeorm';
+import { DataSource, EntityTarget, FindManyOptions, FindOptionsWhere } from 'typeorm';
 import { EntityBase } from '../entities/BaseEntity';
 import { IBaseNameRepository } from '../interfaces/IBaseNameRepository';
 import { TypeORMRepository } from './TypeORMRepository';
@@ -13,7 +13,9 @@ export class TypeORMNameRepository<T extends EntityBase<number>> extends TypeORM
     }
 
     async getEntityByName(name: string): Promise<T | null> {
-        const entities = await this._repository.find({ name } as FindManyOptions<T>);
+        const entities = await this._repository.find({
+            where: { name } as unknown as FindOptionsWhere<T>
+        });
 
         return (entities.length > 0 ) ? entities[0] : null;
     }

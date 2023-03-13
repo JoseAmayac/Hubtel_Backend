@@ -5,6 +5,7 @@ import { TYPES } from '../../../config/ioc/types';
 import { loginValidations } from "../validations/login.validations";
 import { registerValidations } from "../validations/register.validations";
 import { isAuthenticated } from '../../../middleware/isAuthenticated';
+import { validateRefreshToken } from "../../../middleware/validateRefreshToken";
 
 export class AuthRoutes {
     private _router: Router
@@ -17,7 +18,8 @@ export class AuthRoutes {
     private setRoutes() : void {
         this._router.post('/login', [ loginValidations ], this.authController.login );
         this._router.post('/register',[ registerValidations ], this.authController.register );
-        this._router.get('/me',[ isAuthenticated ], this.authController.me)
+        this._router.get('/me',[ isAuthenticated ], this.authController.me);
+        this._router.get('/refresh', [validateRefreshToken], this.authController.refresh);
     }
 
     get router(): Router{

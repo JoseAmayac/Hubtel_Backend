@@ -36,6 +36,7 @@ export class RolesService implements IRoleService {
     async update(id: number,role: CreateRoleDTO): Promise<RoleDTO> {
         const roleToUpdate = new Role();
         roleToUpdate.name = role.name;
+        roleToUpdate.permissions = await this.permissionRepository.getEntitiesById( role.permissions );
         const roleUpdated = await this.rolesRepository.updateEntity(id, roleToUpdate );
         return { ...roleUpdated };
     }
